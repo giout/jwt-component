@@ -4,22 +4,25 @@ import jwt from 'jsonwebtoken'
 import CustomError from "../../error/CustomError"
 import { Request } from "express"
 
+const signature = <string> process.env.TOKEN_SIGNATURE 
+
 export const authentication = (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers['authorization'] || ''
 
     try {
-        // Bearer token authentication schema
-        if (auth.split(' ').length === 2) {
-            const token = auth.split(' ')[1]
-            const signature = <string> process.env.TOKEN_SIGNATURE 
-            let decoded = jwt.verify(token, signature)
+        // Bearer token authentication
+        if (auth.toLowerCase().startsWith('bearer') && 
+            auth.split(' ').length === 2) {
+            const token = auth.split(' ')[1] // Bearer[0] jf8jf8rf9ff4[1]
+            
+            // Verifying token is valid
+            jwt.verify(token, signature, (err, decoded) => {
+                if (err) {
+                    throw new CustomError('Session is invalid', 401)
+                }
+                (req as AuthRequest).user = <JwtPayload> decoded 
+            })
 
-            if (!decoded) {
-                throw new CustomError('Session is invalid', 401)
-            }
-
-            // user data is added to request object
-            (req as AuthRequest).user = decoded 
             return next()
             
         } else {
