@@ -8,7 +8,6 @@ import CustomError from '../../error/CustomError'
 
 const signature = <string> process.env.TOKEN_SIGNATURE
 
-// login, signup
 export class AuthController {
     userModel: Model<AuthDocument>
 
@@ -17,7 +16,6 @@ export class AuthController {
     }
 
     public signUp = async (req: Request, res: Response, next: NextFunction) => {
-
         try {
             let { username, email, password } = req.body
             const user = await this.userModel.findOne({ email })
@@ -26,7 +24,7 @@ export class AuthController {
                 throw new CustomError('User already exists', 400)
             } else {
                 if (username && email && password) {
-                    // encriptar contraseña
+                    // crypting password
                     req.body.password = encrypt(password, 10)
                     const entry = await this.userModel.create(req.body)
                     return res.status(200).json({ msg: 'User created', user: entry })
@@ -42,13 +40,18 @@ export class AuthController {
 
     public logIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            // verifying if user exists 
             const { email, password } = req.body
             const user = await this.userModel.findOne({ email })
     
             if (user) {
                 const { username } = user
+
+                // verifying if password matches
                 if (compareCrypted(password, user.password)) {
                     const payload = { username }
+
+                    // creating and sending auth token
                     const token = jwt.sign(payload, signature, { 
                         expiresIn: 60*60*24*7 
                     })
