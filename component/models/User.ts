@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose"
-import { AuthDocument } from "../types/auth"
+import { UserDocument } from "../types/auth"
 
-const AuthUser = model<AuthDocument>('AuthUser', new Schema({
+const User = model<UserDocument>('User', new Schema({
     firstName: {
         type: String
     },  
@@ -23,4 +23,4 @@ const AuthUser = model<AuthDocument>('AuthUser', new Schema({
     }
 }, { versionKey: false }))
 
-export default AuthUser
+export default User

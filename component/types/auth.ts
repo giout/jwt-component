@@ -2,7 +2,7 @@ import { Document } from "mongoose"
 import { JwtPayload } from "jsonwebtoken"
 import { Request } from "express"
 
-export interface AuthDocument extends Document { 
+export interface UserDocument extends Document { 
     firstName: string,
     lastName: string,
     username: string,
