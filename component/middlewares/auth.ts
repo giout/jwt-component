@@ -8,6 +8,7 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
     const auth = req.headers['authorization'] || ''
 
     try {
+        // Bearer token authentication schema
         if (auth.split(' ').length === 2) {
             const token = auth.split(' ')[1]
             const signature = <string> process.env.TOKEN_SIGNATURE 
@@ -17,6 +18,7 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
                 throw new CustomError('Session is invalid', 401)
             }
 
+            // user data is added to request object
             (req as AuthRequest).user = decoded 
             return next()
             
